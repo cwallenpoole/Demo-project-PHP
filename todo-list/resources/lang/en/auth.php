@@ -12,8 +12,8 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-
-    'failed' => 'These credentials do not match our records.',
+    'email' => 'Could not find user with that email address.',
+    'password' => 'Invalid password',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
 ];

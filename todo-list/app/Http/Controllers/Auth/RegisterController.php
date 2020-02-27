@@ -8,6 +8,7 @@ use App\User;
 use \Illuminate\Foundation\Auth\RegistersUsers;
 use \Illuminate\Support\Facades\Hash;
 use \Illuminate\Support\Facades\Validator;
+use \Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -69,5 +70,21 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    /**
+     * Intercepts the completion of the request, detects whether JSON is needed, and then
+     *
+     * @param Request $request
+     * @param \App\User $user
+     * @return \Illuminate\Http\Response
+     */
+    protected function registered(Request $request, \App\User $user)
+    {
+        if($request->wantsJson()) {
+            return response()->json(['data' => $user->addToken()->toArray()], 201);
+        }
+
+        return redirect($this->redirectPath());
     }
 }
