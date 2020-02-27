@@ -38,6 +38,32 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+    /**
+     * A simpler way to look up a user by email address
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param string $emailAddress
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeEmailIs($query, $emailAddress)
+    {
+        return $query->where('email', '=', $emailAddress);
+    }
+
+
+    /**
+     * A simpler way to look up a user by token
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param string $token
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeTokenIs($query, $token)
+    {
+        return $query->where('api_token', '=', $token);
+    }
+
     /**
      * This simply makes it easier to create a token inline, thereby allowing
      * `$user->addToken()->save()` or similar.
@@ -46,7 +72,9 @@ class User extends Authenticatable
      */
     public function addToken() {
         if((time() - $this->getTokenTime()) > 300) {
-            $this->attributes['api_token'] = Str::random(49) . ':' . time();
+            // The api_token is a combination of random content and the time.
+            // This is a cheap way of letting us force the token to expire.
+            $this->attributes['api_token'] = base64_encode(Str::random(49) . ':' . time());
             $this->saveIfNotDirty();
         }
         return $this;
@@ -92,12 +120,12 @@ class User extends Authenticatable
 
 
     /**
-     * Returns the time portion of the User token.
+     * Returns the time portion of the User's token.
      *
      * @return number
      */
     protected function getTokenTime() {
-        $token = $this->attributes['api_token'];
+        $token = base64_decode($this->attributes['api_token']);
         if(strpos($token, ':') === false) {
             return 0;
         }

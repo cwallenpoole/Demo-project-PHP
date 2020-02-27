@@ -15,6 +15,7 @@ use \Illuminate\Http\Request;
 */
 
 Route::post('register', 'Auth\RegisterController@register');
+Route::get('email-exists', 'Auth\AdministrationController@doesEmailExist');
 
 Route::group(['middleware' => 'auth:api'], function(){
     Route::get('/user', function (Request $request) {
