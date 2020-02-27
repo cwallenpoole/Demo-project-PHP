@@ -41,16 +41,18 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $this->validateLogin($request);
+        if($request->wantsJson()) {
+            $this->validateLogin($request);
 
-        if ($this->attemptLogin($request)) {
-            $user = $this->guard()->user();
+            if ($this->attemptLogin($request)) {
+                $user = $this->guard()->user();
 
-            return response()->json([
-                'data' => $user->addToken()->toArray(),
-            ], 200, [], 128);
+                return response()->json([
+                    'data' => $user->addToken()->toArray(),
+                ], 200, [], 128);
+            }
+            return $this->sendFailedLoginResponse($request);
         }
-
-        return $this->sendFailedLoginResponse($request);
+        return parent::login($request);
     }
 }
