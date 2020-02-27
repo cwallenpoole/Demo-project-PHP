@@ -3,8 +3,10 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Containers\RolesContainer;
+use App\User;
 
-class AddsApiTokenToUsersTable extends Migration
+class AddRoleColumn extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +16,12 @@ class AddsApiTokenToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('api_token', 255)->unique()->nullable();
+            $table->string('role')->default(RolesContainer::READER);
         });
+
+        // Set the first user's role to admin.
+        User::orderBy('id', 'asc')->first()->setAttribute('role', RolesContainer::ADMIN)->save();
+
     }
 
     /**
@@ -26,7 +32,7 @@ class AddsApiTokenToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['api_token']);
+            $table->dropColumn('role');
         });
     }
 }

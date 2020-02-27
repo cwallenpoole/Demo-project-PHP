@@ -6,6 +6,7 @@ use \Illuminate\Support\Str;
 use \Illuminate\Contracts\Auth\MustVerifyEmail;
 use \Illuminate\Foundation\Auth\User as Authenticatable;
 use \Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -71,13 +72,32 @@ class User extends Authenticatable
      * @return \App\User
      */
     public function addToken() {
-        if((time() - $this->getTokenTime()) > 300) {
+        if(!$this->tokenIsValid()) {
+
+            $key = config('app.key');
+            $id = $this->id;
+            $combine = $key . $id;
+            $offset = rand(0, strlen($combine) - 1) + 1;
+
+            // This may eventually be needed for further valiation of the api_token. For
+            // now, however, it is merely generating an application-specific random string.
+            $hash = Hash::make(substr($combine, $offset) . substr($combine, 0, $offset));
+
             // The api_token is a combination of random content and the time.
             // This is a cheap way of letting us force the token to expire.
-            $this->attributes['api_token'] = base64_encode(Str::random(49) . ':' . time());
+            $this->attributes['api_token'] = base64_encode($hash . ':' . $offset . ':' . $id . ':' . time());
             $this->saveIfNotDirty();
         }
         return $this;
+    }
+
+    /**
+     * Returns whether or not the token has expired.
+     *
+     * @return boolean
+     */
+    public function tokenIsValid() {
+        return (time() - $this->getTokenTime()) <= 300;
     }
 
     /**
@@ -98,7 +118,7 @@ class User extends Authenticatable
      *
      * @return \App\User
      */
-    public function cleadApiToken() {
+    public function clearApiToken() {
         $this->attributes['api_token'] = null;
         $this->saveIfNotDirty();
         return $this;
@@ -125,13 +145,12 @@ class User extends Authenticatable
      * @return number
      */
     protected function getTokenTime() {
-        $token = base64_decode($this->attributes['api_token']);
+        $token = base64_decode($this->attributes['api_token'] ?? '');
         if(strpos($token, ':') === false) {
             return 0;
         }
-        list($_, $ret) = explode(':', $token);
-
-        return (int) $ret;
+        $parts = explode(':', $token);
+        return (int) end($parts);
     }
 
     /**
@@ -141,7 +160,9 @@ class User extends Authenticatable
      * no other changes are made.
      */
     protected function saveIfNotDirty() {
-        if(!$this->getDirty()){
+        $dirty = $this->getDirty();
+        unset($dirty['api_token']);
+        if(!$dirty){
             $this->save();
         }
     }

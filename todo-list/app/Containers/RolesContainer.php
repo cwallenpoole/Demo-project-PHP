@@ -30,8 +30,6 @@ class RolesContainer {
      */
     public function userMatchesRole(User $user, $role) {
 
-        Log::info('Checking values ' . var_export(func_get_args(), 1));
-
         if(func_num_args() > 2) {
             $roles = func_get_args();
             array_shift($roles);

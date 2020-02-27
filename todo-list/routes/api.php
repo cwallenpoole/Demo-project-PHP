@@ -15,10 +15,13 @@ use \Illuminate\Http\Request;
 */
 
 Route::post('register', 'Auth\RegisterController@register');
-Route::get('email-exists', 'Auth\AdministrationController@doesEmailExist');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout');
 
 Route::group(['middleware' => 'auth:api'], function(){
+    Route::get('/admin/email-exists', 'Auth\AdministrationController@doesEmailExist');
+    Route::get('/admin/is-token-valid', 'Auth\AdministrationController@isTokenValid');
     Route::get('/user', function (Request $request) {
-        return json_encode($request->user());
+        return json_encode(['data' => $request->user()], 128);
     });
 });
