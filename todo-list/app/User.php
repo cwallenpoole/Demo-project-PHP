@@ -66,6 +66,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Allows us to reference the entries.
+     *
+     * // @return \Illuminate\Database\Eloquent\Relations\HasMany
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function entries() {
+        return $this->hasMany(TodoEntry::class);
+    }
+
+
+    /**
      * This simply makes it easier to create a token inline, thereby allowing
      * `$user->addToken()->save()` or similar.
      *
