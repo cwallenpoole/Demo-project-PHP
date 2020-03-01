@@ -16,7 +16,6 @@ class CreateTodoList extends Migration
     {
         Schema::create('todo_list_entries', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');
             $table->longText('description');
             $table->dateTime('due_date');
             $table->integer('priority')
@@ -25,6 +24,7 @@ class CreateTodoList extends Migration
                 ->default(TodoEntry::STATUS_NEW);
             $table->timestamps();
 
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
