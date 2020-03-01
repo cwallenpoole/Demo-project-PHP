@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class TodoEntry extends Model
+class TodoEntry extends \App\Model
 {
     const STATUS_NEW = 'new';
     const STATUS_COMPLETE = 'complete';
@@ -26,7 +24,7 @@ class TodoEntry extends Model
      *
      * @var array
      */
-    protected $hidden = ['user_id'];
+    protected $hidden = ['list_id'];
 
     /**
      * The table associated with the model.

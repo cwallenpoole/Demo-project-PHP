@@ -41,6 +41,17 @@ class User extends Authenticatable
 
 
     /**
+     * Have to C&P here because it doesn't make sense to make this function a trait
+     * and we can't do multiple inheritence.
+     *
+     * @return string
+     */
+    public static function getClassTable() {
+        return (new static())->getTable();
+    }
+
+
+    /**
      * A simpler way to look up a user by email address
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query

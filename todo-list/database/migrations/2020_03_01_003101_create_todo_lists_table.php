@@ -17,7 +17,9 @@ class CreateTodoListsTable extends Migration
      */
     public function up()
     {
-        Schema::create('todo_lists', function (Blueprint $table) {
+        Schema::dropIfExists(TodoList::getClassTable());
+
+        Schema::create(TodoList::getClassTable(), function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->string('description');
@@ -30,7 +32,7 @@ class CreateTodoListsTable extends Migration
                 ->onDelete('cascade');
         });
 
-        Schema::table('todo_list_entries', function(Blueprint $table) {
+        Schema::table(TodoEntry::getClassTable(), function(Blueprint $table) {
             $table->unsignedBigInteger('list_id');
 
             $table->foreign('list_id')
@@ -41,7 +43,7 @@ class CreateTodoListsTable extends Migration
 
         // Previously we had the map User -> entry. We now need to assign all of those
         // entries into an actual list. Creating default lists for all existing users
-        foreach (User::find() as $user) {
+        foreach (User::all() as $user) {
             $list = (new TodoList());
             $list->fill([
                 'description' => $user->name . '\'s list',
@@ -52,7 +54,7 @@ class CreateTodoListsTable extends Migration
                 ->update(['list_id' => $list->id]);
         }
 
-        Schema::table('todo_list_entries', function(Blueprint $table) {
+        Schema::table(TodoEntry::getClassTable(), function(Blueprint $table) {
             $table->removeColumn('user_id');
         });
     }
@@ -64,7 +66,8 @@ class CreateTodoListsTable extends Migration
      */
     public function down()
     {
-        Schema::table('todo_list_entries', function(Blueprint $table) {
+
+        Schema::table(TodoEntry::getClassTable(), function(Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')
@@ -81,6 +84,6 @@ class CreateTodoListsTable extends Migration
             DB::commit();
         });
 
-        Schema::dropIfExists('todo_lists');
+        Schema::dropIfExists(TodoList::getClassTable());
     }
 }
