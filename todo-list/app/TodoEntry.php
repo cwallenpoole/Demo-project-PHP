@@ -10,7 +10,7 @@ class TodoEntry extends \App\Model
     const STATUS_IN_PROGRESS = 'In progress';
 
     const PRIORITY_LOWEST = 1;
-    const PRIORITY_HIGHEST = 10;
+    const PRIORITY_HIGHEST = 9;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +18,7 @@ class TodoEntry extends \App\Model
      * @var array
      */
     protected $fillable = [
-        'description', 'due_date', 'status',
+        'description', 'due_date', 'status', 'list_id'
     ];
 
     /**
@@ -43,6 +43,18 @@ class TodoEntry extends \App\Model
         return $this->belongsTo(TodoList::class, 'list_id');
     }
 
+    public function lowestPossiblePriority() {
+        return static::PRIORITY_LOWEST;
+    }
+    public function highestPossiblePriority() {
+        return static::PRIORITY_HIGHEST;
+    }
+
+    /**
+     * For use in views. Gives a list of valid statuses.
+     *
+     * @return array
+     */
     public function getValidStatuses() {
         $consts = (new \ReflectionClass(__CLASS__))->getConstants();
 

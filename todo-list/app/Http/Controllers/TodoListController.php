@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\TodoList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 
 class TodoListController extends Controller
 {
@@ -69,9 +71,21 @@ class TodoListController extends Controller
      * @param  \App\TodoList  $todoList
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TodoList $todoList)
+    public function update(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|numeric',
+            'id' => 'nullable|numeric|min:1',
+            'description' => 'required|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            Session::flash('error', $validator->messages()->first());
+            return redirect()->back()->withInput();
+        }
+
+        $list = TodoList::updateOrCreate($validator->validated());
+        return redirect()->route('list.edit', ['todoList' => $list->id]);
     }
 
     /**

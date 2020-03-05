@@ -55,6 +55,7 @@ class CreateTodoListsTable extends Migration
         }
 
         Schema::table(TodoEntry::getClassTable(), function(Blueprint $table) {
+            $table->dropForeign('user_id');
             $table->removeColumn('user_id');
         });
     }

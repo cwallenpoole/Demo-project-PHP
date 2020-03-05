@@ -15,7 +15,7 @@
                     @endif
 					<ul class="mb-0">
     					@foreach ($user->lists as $list)
-    						<li>{!! link_to_route('list.edit', $list->description, ['id' => $list->id]) !!}</li>
+    						<li>{!! link_to_route('list.edit', $list->description, ['todoList' => $list->id]) !!}</li>
     					@endforeach
     					<li>{!!
     						link_to_route(

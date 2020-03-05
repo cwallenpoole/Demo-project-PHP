@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\TodoEntry;
 use Illuminate\Http\Request;
 use App\TodoList;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 
 class TodoEntryController extends Controller
 {
@@ -64,12 +66,29 @@ class TodoEntryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TodoEntry  $todoEntry
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TodoEntry $todoEntry)
+    public function update(Request $request)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'list_id' => 'required|numeric',
+            'id' => 'nullable|numeric|min:1',
+            'description' => 'required|max:255',
+            'priority' => 'digits:1|required',
+            'status' => 'required|max:20',
+            'due_date' => 'required|date|after_or_equal:today'
+        ]);
+
+        if ($validator->fails()) {
+            Session::flash('error', $validator->messages()->first());
+            return redirect()->back()->withInput();
+        }
+
+        $entry = TodoEntry::updateOrCreate(
+            ['due_date' => date('Y-m-d', strtotime($request->post('due_date')))] + $validator->validated()
+        );
+        return redirect()->route('list.edit', ['todoList' => $entry->parent->id]);
     }
 
     /**

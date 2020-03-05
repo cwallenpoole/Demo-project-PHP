@@ -19,28 +19,29 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware' => 'auth'], function(){
+    Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/list/new', 'TodoListController@create')
-    ->name('list.new');
+    Route::get('/list/new', 'TodoListController@create')
+        ->name('list.new');
 
-Route::get('/list/{todoList}/edit', 'TodoListController@edit')
-    ->where(['todoList' => '^[0-9]+$'])
-    ->name('list.edit');
+    Route::get('/list/{todoList}/edit', 'TodoListController@edit')
+        ->where(['todoList' => '^[0-9]+$'])
+        ->name('list.edit');
 
-Route::get('/list/{id}', 'TodoListController@show')->name('list.view');
-Route::post('/list/update', 'TodoListController@update')->name('list.update');
+    Route::get('/list/{id}', 'TodoListController@show')->name('list.view');
+    Route::post('/list/update', 'TodoListController@update')->name('list.update');
 
 
-Route::get('/list/{todoList}/entry/new', 'TodoEntryController@create')
-    ->name('entry.new');
+    Route::get('/list/{todoList}/entry/new', 'TodoEntryController@create')
+        ->name('entry.new');
 
-Route::get('/list/{list_id}/entry/{entryId}/edit', 'TodoEntryController@edit')
-    ->where(['todoList' => '^[0-9]+$'])
-    ->where(['list_id' => '^[0-9]+$'])
-    ->name('list.edit');
+    Route::get('/list/{todoList}/entry/{entryId}/edit', 'TodoEntryController@edit')
+        ->where(['todoList' => '^[0-9]+$'])
+        ->where(['entryId' => '^[0-9]+$'])
+        ->name('entry.edit');
 
-Route::get('/list/{todoList}/entry/{entryId}', 'TodoEntryController@show')->name('list.view');
+    Route::get('/list/{todoList}/entry/{entryId}', 'TodoEntryController@show')->name('list.view');
 
-Route::post('/list/entry/update', 'TodoEntryController@update')->name('list.update');
-Route::get('/list/update', 'TodoListController@update')->name('list.update');
+    Route::post('/list/entry/update', 'TodoEntryController@update')->name('entry.update');
+});

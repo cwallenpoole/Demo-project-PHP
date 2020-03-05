@@ -78,6 +78,14 @@
         </nav>
 
         <main class="py-4">
+            @if ($message = Session::get('error'))
+            <div class="alert alert-error alert-block bg-danger col-12">
+            	<div class="text-white col-4 offset-3 pl-5">
+                	<button type="button" class="close float-left text-white" data-dismiss="alert" style="opacity: 1">×</button>
+                    <strong class="pl-2">{{ $message }}</strong>
+                 </div>
+            </div>
+            @endif
         	<div class="main">
             @yield('content')
             </div>
