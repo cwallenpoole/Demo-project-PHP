@@ -4,8 +4,10 @@ namespace App;
 
 class TodoEntry extends \App\Model
 {
-    const STATUS_NEW = 'new';
-    const STATUS_COMPLETE = 'complete';
+    const STATUS_NEW = 'New';
+    const STATUS_COMPLETE = 'Complete';
+    const STATUS_DELETED = 'Deleted';
+    const STATUS_IN_PROGRESS = 'In progress';
 
     const PRIORITY_LOWEST = 1;
     const PRIORITY_HIGHEST = 10;
@@ -35,11 +37,21 @@ class TodoEntry extends \App\Model
 
     /**
      *
-     * @return \App\User
+     * @return \App\TodoList
      */
-    public function owner() {
-        return $this->belongsTo(User::class, 'user_id');
+    public function parent() {
+        return $this->belongsTo(TodoList::class, 'list_id');
     }
 
+    public function getValidStatuses() {
+        $consts = (new \ReflectionClass(__CLASS__))->getConstants();
+
+
+        return array_filter(
+            $consts,
+            function($name){return strpos($name, 'STATUS_') !== false;},
+            ARRAY_FILTER_USE_KEY
+        );
+    }
 
 }

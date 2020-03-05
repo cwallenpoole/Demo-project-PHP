@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\TodoList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TodoListController extends Controller
 {
@@ -25,6 +26,7 @@ class TodoListController extends Controller
     public function create()
     {
         //
+        return view('lists/edit', ['todoList' => new TodoList(), 'user' => Auth::user()]);
     }
 
     /**
@@ -57,7 +59,7 @@ class TodoListController extends Controller
      */
     public function edit(TodoList $todoList)
     {
-        //
+        return view('lists.edit', ['todoList' => $todoList, 'user' => Auth::user()]);
     }
 
     /**

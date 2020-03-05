@@ -77,14 +77,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Allows us to reference the entries.
+     * Allows us to reference the lists.
      *
-     * // @return \Illuminate\Database\Eloquent\Relations\HasMany
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function entries() {
-        return $this->hasMany(TodoEntry::class);
+    public function lists() {
+        return $this->hasMany(TodoList::class);
     }
 
 

@@ -20,7 +20,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers {
+        login as authLogin;
+    }
 
     /**
      * Where to redirect users after login.
@@ -53,6 +55,6 @@ class LoginController extends Controller
             }
             return $this->sendFailedLoginResponse($request);
         }
-        return parent::login($request);
+        return $this->authLogin($request);
     }
 }

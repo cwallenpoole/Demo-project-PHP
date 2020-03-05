@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\TodoEntry;
 use Illuminate\Http\Request;
+use App\TodoList;
 
 class TodoEntryController extends Controller
 {
@@ -22,9 +23,9 @@ class TodoEntryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request, TodoList $todoList)
     {
-        //
+        return view('lists.entry.edit', ['todoList' => $todoList, 'entry' => new TodoEntry()]);
     }
 
     /**
@@ -35,7 +36,6 @@ class TodoEntryController extends Controller
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
@@ -46,7 +46,7 @@ class TodoEntryController extends Controller
      */
     public function show(TodoEntry $todoEntry)
     {
-        //
+        return view('lists.entry.view');
     }
 
     /**
@@ -57,7 +57,7 @@ class TodoEntryController extends Controller
      */
     public function edit(TodoEntry $todoEntry)
     {
-        //
+        return view('lists.entry.edit');
     }
 
     /**

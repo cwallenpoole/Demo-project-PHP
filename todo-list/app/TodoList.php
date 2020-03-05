@@ -26,4 +26,22 @@ class TodoList extends \App\Model
      * @var string
      */
     protected $table = 'todo_lists';
+
+    /**
+     *
+     * @return \App\User
+     */
+    public function owner() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Allows us to reference the entries.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function entries() {
+        return $this->hasMany(TodoEntry::class, 'list_id');
+    }
+
 }

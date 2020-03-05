@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">Your lists:</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -13,8 +13,17 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+					<ul class="mb-0">
+    					@foreach ($user->lists as $list)
+    						<li>{!! link_to_route('list.edit', $list->description, ['id' => $list->id]) !!}</li>
+    					@endforeach
+    					<li>{!!
+    						link_to_route(
+    							'list.new',
+    							'Create a new list &#43;',
+    							[], ['class' => 'text-success font-weight-bolder'])
+    							!!}</li>
+					</ul>
                 </div>
             </div>
         </div>

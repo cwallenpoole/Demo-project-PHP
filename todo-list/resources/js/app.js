@@ -5,6 +5,8 @@
  */
 
 require('./bootstrap');
+const dtp = require('bootstrap-datepicker');
+window.moment = require('moment');
 
 window.Vue = require('vue');
 
@@ -27,6 +29,22 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app',
+$(function(){
+	$('.use-datatable').DataTable({
+		info: false,
+		searching: false,
+		paging: false
+	});
+	const gdp = $.fn.datepicker.DPGlobal;
+	gdp.template = gdp.template.replace('<div class="datepicker">', '<div class="datepicker p-2">');
+	const globalDPOptions = {
+		todayHighlight: true,
+
+	};
+	$('.datepicker').each(function(){
+		let $this = $(this);
+		$this.datepicker($.extend({
+			startDate: $this.data('min-date') || moment().startOf('day').toDate()
+		}, $this.data('date-picker-options'), globalDPOptions));
+	});
 });

@@ -1,0 +1,9 @@
+.day {
+	cursor: pointer;
+	text-align: right;
+
+	&.disabled {
+		background-color: #eee;
+		cursor: not-allowed;
+	}
+}
