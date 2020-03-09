@@ -84,9 +84,11 @@ class TodoEntryController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Session::flash('error', $validator->messages()->first());
-            return redirect()->back()->withInput();
+            return $this->fail($request, $validator);
         }
+
+        // We can'd to the raw updateOrCreate because we are dealing with the possibility of
+        // multiple time formats.
         $data = ['due_date' => date('Y-m-d', strtotime($request->post('due_date')))] + $validator->validated();
 
         if($data['id']) {
@@ -97,7 +99,7 @@ class TodoEntryController extends Controller
         $entry->update($data);
         $entry->save();
 
-        return redirect()->route('list.edit', ['todoList' => $entry->parent->id]);
+        return $this->redirectToList($entry->parent);
     }
 
     /**

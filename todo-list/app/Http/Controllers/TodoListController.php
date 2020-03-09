@@ -69,11 +69,7 @@ class TodoListController extends Controller
             $entries->orderBy($column, $direction);
         }
 
-        return response()->json([
-            'data' => $todoList->toArray(),
-            'children' => $entries->get()->toArray(),
-            'owner' => $todoList->owner->toArray()
-        ], 200, [], 128);
+        return $this->showListAsJson($todoList, $entries);
     }
 
     /**
@@ -103,12 +99,11 @@ class TodoListController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Session::flash('error', $validator->messages()->first());
-            return redirect()->back()->withInput();
+            return $this->fail($request, $validator);
         }
 
         $list = TodoList::updateOrCreate($validator->validated());
-        return redirect()->route('list.edit', ['todoList' => $list->id]);
+        return $this->redirectToList($list);
     }
 
     /**
@@ -117,9 +112,12 @@ class TodoListController extends Controller
      * @param  \App\TodoList  $todoList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TodoList $todoList)
+    public function destroy(Request $request, TodoList $todoList)
     {
         $todoList->delete();
+        if($request->wantsJson()) {
+            return response('', 201);
+        }
         return redirect()->route('home');
     }
 }
