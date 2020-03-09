@@ -15,7 +15,7 @@
                         {!! Form::label('description', 'This is your list\'s name:') !!}
                         {!! Form::text('description', null, ['class' => 'w-100 form-control']) !!}
                         {!! Form::submit('Save', ['class' => 'btn btn-primary mt-2 col-3']) !!}
-                        {!! Form::button('Delete', ['name' => 'delete', 'class' => 'btn btn-danger mt-2 col-3']) !!}
+                        {!! Form::button('Delete', ['name' => 'delete', 'type' => 'submit', 'value' => 1, 'class' => 'btn btn-danger mt-2 col-3']) !!}
                     {!! Form::close() !!}
                 </div>
             </div>

@@ -76,6 +76,7 @@ class TodoEntryController extends Controller
         $id = $request->post('id');
         $entry = $id? TodoEntry::findOrFail($id): null;
 
+        // By having this condition here, we can avoid using JS to modify the form.
         if($request->post('delete')) {
             return $this->destroy($request, $entry);
         }

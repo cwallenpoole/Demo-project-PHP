@@ -92,11 +92,11 @@ class TodoListController extends Controller
      */
     public function update(Request $request)
     {
-        $id = $request->post('id');
-        $entry = $id? TodoList::findOrFail($id): null;
 
+        // By having this condition here, we can avoid using JS to modify the form.
         if($request->post('delete')) {
-            return $this->destroy($request, $entry);
+            $id = $request->post('id');
+            return $this->destroy($request, TodoList::findOrFail($id));
         }
 
         $validator = Validator::make($request->all(), [
@@ -108,6 +108,7 @@ class TodoListController extends Controller
         if ($validator->fails()) {
             return $this->fail($request, $validator);
         }
+
 
         $list = TodoList::updateOrCreate($validator->validated());
         return $this->redirectToList($list);
