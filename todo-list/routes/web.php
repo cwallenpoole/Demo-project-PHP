@@ -40,4 +40,15 @@ Route::group(['middleware' => 'auth'], function(){
 
     Route::post('/list/update', 'TodoListController@update')->name('list.update');
     Route::post('/list/entry/update', 'TodoEntryController@update')->name('entry.update');
+
+
+    // We're just using POST here because this is a browser action not controlled by AJAX.
+    Route::post('/list/{todoList}/delete', 'TodoListController@destroy')
+        ->where(['todoList' => '^[0-9]+$'])
+        ->name('list.delete');
+
+    Route::post('/list/{todoList}/entry/{todoEntry}/delete', 'TodoEntryController@destroy')
+        ->where(['todoList' => '^[0-9]+$'])
+        ->where(['todoEntry' => '^[0-9]+$'])
+        ->name('entry.delete');
 });

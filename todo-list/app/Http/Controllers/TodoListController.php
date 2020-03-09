@@ -92,6 +92,13 @@ class TodoListController extends Controller
      */
     public function update(Request $request)
     {
+        $id = $request->post('id');
+        $entry = $id? TodoList::findOrFail($id): null;
+
+        if($request->post('delete')) {
+            return $this->destroy($request, $entry);
+        }
+
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|numeric',
             'id' => 'nullable|numeric|min:1',
@@ -114,6 +121,9 @@ class TodoListController extends Controller
      */
     public function destroy(Request $request, TodoList $todoList)
     {
+        foreach ($todoList->entries as $entry) {
+            $entry->delete();
+        }
         $todoList->delete();
         if($request->wantsJson()) {
             return response('', 201);

@@ -31,6 +31,9 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::get('/list/{todoList}/entry/{entry}', 'TodoEntryController@show')->name('list.view');
 
+    Route::delete('/list/{todoList}', 'TodoListController@destroy')->name('list.delete');
+    Route::delete('/list/{todoList}/entry/{entry}', 'TodoEntryController@destroy')->name('entry.delete');
+
     Route::get('/user', function (Request $request) {
         $user = Auth::user();
         return json_encode(['data' => $user->toArray() + ['lists' => $user->lists]], 128);

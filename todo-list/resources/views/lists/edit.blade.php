@@ -15,6 +15,7 @@
                         {!! Form::label('description', 'This is your list\'s name:') !!}
                         {!! Form::text('description', null, ['class' => 'w-100 form-control']) !!}
                         {!! Form::submit('Save', ['class' => 'btn btn-primary mt-2 col-3']) !!}
+                        {!! Form::button('Delete', ['name' => 'delete', 'class' => 'btn btn-danger mt-2 col-3']) !!}
                     {!! Form::close() !!}
                 </div>
             </div>
@@ -39,7 +40,8 @@
         							'entry.edit', $entry->description,
         							['todoList' => $todoList->id, 'todoEntry' => $entry->id]) !!}</td>
         						<td>{{ $entry->priority }}</td>
-        						<td>{{ $entry->due_date }}</td>
+        						<td data-order="{{ strtotime($entry->due_date) }}">
+        							{{ strftime("%b %d, %Y", strtotime($entry->due_date)) }}</td>
         						<td>{{ $entry->getValidStatuses()[$entry->status] }}</td>
     						</tr>
         					@endforeach

@@ -38,7 +38,7 @@
                         	{!! Form::label('due_date', 'Due date	:', ['class' => 'p-2']) !!}
                           <!-- Another variation with a button -->
                           <div class="input-group col-4 mr-0 pr-0">
-                            {!! Form::text('due_date', null, ['class' => ' form-control datepicker', 'required']) !!}
+                            {!! Form::date('due_date', new DateTime($entry->due_date), ['class' => ' form-control ndatepicker', 'required']) !!}
                             <div class="input-group-append d-block">
                               <button class="btn btn-secondary" type="button">
                         		<i class="fa fa-calendar"></i>
@@ -48,7 +48,12 @@
                         </div>
 
                         <div class="row col-12 m-0">
-                        	{!! Form::submit('Save', ['class' => 'btn btn-primary mt-2']) !!}
+                        	<div class="col-3">
+                        		{!! Form::submit('Save', ['class' => 'btn btn-primary mt-2 w-100']) !!}
+                        	</div>
+                        	<div class="col-3">
+                        		{!! Form::button('Delete', ['name' => 'delete', 'value' => 1, 'class' => 'btn btn-danger mt-2 w-100', 'type' => 'submit']) !!}
+                        	</div>
                         </div>
                     {!! Form::close() !!}
             	</div>

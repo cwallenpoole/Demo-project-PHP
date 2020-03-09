@@ -73,6 +73,12 @@ class TodoEntryController extends Controller
      */
     public function update(Request $request)
     {
+        $id = $request->post('id');
+        $entry = $id? TodoEntry::findOrFail($id): null;
+
+        if($request->post('delete')) {
+            return $this->destroy($request, $entry);
+        }
 
         $validator = Validator::make($request->all(), [
             'list_id' => 'required|numeric',
@@ -91,15 +97,13 @@ class TodoEntryController extends Controller
         // multiple time formats.
         $data = ['due_date' => date('Y-m-d', strtotime($request->post('due_date')))] + $validator->validated();
 
-        if($data['id']) {
-            $entry = TodoEntry::find($data['id']);
-        } else {
+        if(!$id) {
             $entry = new TodoEntry();
         }
         $entry->update($data);
         $entry->save();
 
-        return $this->redirectToList($entry->parent);
+        return $this->redirectToList($request, $entry->parent);
     }
 
     /**
@@ -108,8 +112,13 @@ class TodoEntryController extends Controller
      * @param  \App\TodoEntry  $todoEntry
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TodoEntry $todoEntry)
+    public function destroy(Request $request, TodoEntry $todoEntry)
     {
+        $todoList = $todoEntry->parent;
         $todoEntry->delete();
+        if($request->wantsJson()) {
+            return response('', 201);
+        }
+        return $this->redirectToList($request, $todoList);
     }
 }
