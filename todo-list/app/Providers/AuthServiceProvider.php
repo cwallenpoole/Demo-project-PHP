@@ -6,6 +6,7 @@ use \Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvi
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use App\Containers\RolesContainer;
 use Illuminate\Contracts\Auth\UserProvider as UserProviderInterface;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->bind(UserProviderInterface::class, UserProvider::class);
 
         $gate->define('hasRole', 'RolesContainer@userMatchesRole');
+        $gate->define('canEdit', 'RolesContainer@userCanEdit');
 
         $this->registerPolicies();
     }

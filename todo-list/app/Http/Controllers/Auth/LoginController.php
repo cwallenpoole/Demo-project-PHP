@@ -50,7 +50,7 @@ class LoginController extends Controller
                 $user = $this->guard()->user();
 
                 return response()->json([
-                    'data' => $user->addToken()->toArray(),
+                    'data' => $user->addToken()->toArray() + ['api_token' => $user->api_token],
                 ], 200, [], 128);
             }
             return $this->sendFailedLoginResponse($request);

@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Session;
 class TodoEntryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Create a new controller instance.
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function index()
+    public function __construct()
     {
-        //
+        $this->middleware('auth');
     }
 
     /**
@@ -31,35 +31,38 @@ class TodoEntryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  \App\TodoEntry  $todoEntry
      * @return \Illuminate\Http\Response
      */
-    public function show(TodoEntry $todoEntry)
+    public function show(TodoList $todoList, $index)
     {
-        return view('lists.entry.view');
+        $entries = $todoList->entries;
+        if($index >= count($entries)) {
+            abort(404);
+            return;
+        }
+        $todoEntry = $entries[$index];
+        return response()->json([
+                'data' => $todoEntry->toArray(),
+                'parent' => collect($todoList->toArray())->except(['entries']),
+                'owner' => $todoList->owner->toArray()
+            ], 200, [], 128
+        );
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\TodoEntry  $todoEntry
+     * @param Request $request
+     * @param TodoList $todoList
+     * @param TodoEntry $todoEntry
      * @return \Illuminate\Http\Response
      */
-    public function edit(TodoEntry $todoEntry)
+    public function edit(Request $request, TodoList $todoList, TodoEntry $todoEntry)
     {
-        return view('lists.entry.edit');
+        return view('lists.entry.edit', ['todoList' => $todoList, 'entry' => $todoEntry]);
     }
 
     /**
@@ -75,7 +78,7 @@ class TodoEntryController extends Controller
             'list_id' => 'required|numeric',
             'id' => 'nullable|numeric|min:1',
             'description' => 'required|max:255',
-            'priority' => 'digits:1|required',
+            'priority' => 'required|digits_between:1,9',
             'status' => 'required|max:20',
             'due_date' => 'required|date|after_or_equal:today'
         ]);
@@ -84,10 +87,16 @@ class TodoEntryController extends Controller
             Session::flash('error', $validator->messages()->first());
             return redirect()->back()->withInput();
         }
+        $data = ['due_date' => date('Y-m-d', strtotime($request->post('due_date')))] + $validator->validated();
 
-        $entry = TodoEntry::updateOrCreate(
-            ['due_date' => date('Y-m-d', strtotime($request->post('due_date')))] + $validator->validated()
-        );
+        if($data['id']) {
+            $entry = TodoEntry::find($data['id']);
+        } else {
+            $entry = new TodoEntry();
+        }
+        $entry->update($data);
+        $entry->save();
+
         return redirect()->route('list.edit', ['todoList' => $entry->parent->id]);
     }
 
@@ -99,6 +108,6 @@ class TodoEntryController extends Controller
      */
     public function destroy(TodoEntry $todoEntry)
     {
-        //
+        $todoEntry->delete();
     }
 }

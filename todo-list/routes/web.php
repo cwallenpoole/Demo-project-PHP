@@ -29,19 +29,15 @@ Route::group(['middleware' => 'auth'], function(){
         ->where(['todoList' => '^[0-9]+$'])
         ->name('list.edit');
 
-    Route::get('/list/{id}', 'TodoListController@show')->name('list.view');
-    Route::post('/list/update', 'TodoListController@update')->name('list.update');
 
+    Route::get('/list/{todoList}/entry/{todoEntry}/edit', 'TodoEntryController@edit')
+        ->where(['todoList' => '^[0-9]+$'])
+        ->where(['todoEntry' => '^[0-9]+$'])
+        ->name('entry.edit');
 
     Route::get('/list/{todoList}/entry/new', 'TodoEntryController@create')
         ->name('entry.new');
 
-    Route::get('/list/{todoList}/entry/{entryId}/edit', 'TodoEntryController@edit')
-        ->where(['todoList' => '^[0-9]+$'])
-        ->where(['entryId' => '^[0-9]+$'])
-        ->name('entry.edit');
-
-    Route::get('/list/{todoList}/entry/{entryId}', 'TodoEntryController@show')->name('list.view');
-
+    Route::post('/list/update', 'TodoListController@update')->name('list.update');
     Route::post('/list/entry/update', 'TodoEntryController@update')->name('entry.update');
 });

@@ -2,6 +2,7 @@
 
 use \Illuminate\Support\Facades\Route;
 use \Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,17 @@ Route::post('logout', 'Auth\LoginController@logout');
 Route::group(['middleware' => 'auth:api'], function(){
     Route::get('/admin/email-exists', 'Auth\AdministrationController@doesEmailExist');
     Route::get('/admin/is-token-valid', 'Auth\AdministrationController@isTokenValid');
+
+
+    Route::post('/list/update', 'TodoListController@update')->name('list.update');
+    Route::post('/list/entry/update', 'TodoEntryController@update')->name('entry.update');
+
+    Route::get('/list/{todoList}', 'TodoListController@show')->name('list.view');
+
+    Route::get('/list/{todoList}/entry/{entry}', 'TodoEntryController@show')->name('list.view');
+
     Route::get('/user', function (Request $request) {
-        return json_encode(['data' => $request->user()], 128);
+        $user = Auth::user();
+        return json_encode(['data' => $user->toArray() + ['lists' => $user->lists]], 128);
     });
 });

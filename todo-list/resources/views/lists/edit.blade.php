@@ -36,8 +36,8 @@
         					<tr>
         						<td>{!!
         						link_to_route(
-        							'entry.edit', $todoList->description,
-        							['todoList' => $todoList->id, 'entryId' => $entry->id]) !!}</td>
+        							'entry.edit', $entry->description,
+        							['todoList' => $todoList->id, 'todoEntry' => $entry->id]) !!}</td>
         						<td>{{ $entry->priority }}</td>
         						<td>{{ $entry->due_date }}</td>
         						<td>{{ $entry->getValidStatuses()[$entry->status] }}</td>

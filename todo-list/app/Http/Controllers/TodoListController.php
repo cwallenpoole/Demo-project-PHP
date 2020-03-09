@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Session;
 class TodoListController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Create a new controller instance.
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function index()
+    public function __construct()
     {
-        //
+        $this->middleware('auth');
     }
 
     /**
@@ -27,19 +27,7 @@ class TodoListController extends Controller
      */
     public function create()
     {
-        //
         return view('lists/edit', ['todoList' => new TodoList(), 'user' => Auth::user()]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -48,9 +36,44 @@ class TodoListController extends Controller
      * @param  \App\TodoList  $todoList
      * @return \Illuminate\Http\Response
      */
-    public function show(TodoList $todoList)
+    public function show(Request $request, TodoList $todoList)
     {
-        //
+        $sortStr = $request->get('sort');
+        $finalSort = [];
+
+        if($sortStr) {
+            $sortPieces = explode(',', $sortStr);
+            foreach ($sortPieces as $piece) {
+                $clean = trim($piece);
+                if(!$clean) {
+                    continue;
+                }
+                $parts = explode(' ', $clean);
+                $finalSort[$parts[0]] = $parts[1] ?? 'asc';
+            }
+        }
+        $finalSort += [
+            'priority' => 'desc',
+            'due_date' => 'asc',
+            'id' => 'desc',
+            'description' => 'asc',
+            'created_at' => 'asc',
+            'updated_at' => 'asc',
+            // Status is complicated by the fact that it's a string. The "right" way to handle this
+            // is by creating a DB::raw for the order by or switching the database to use integers.
+            'status' => 'desc'
+        ];
+
+        $entries = $todoList->entries();
+        foreach ($finalSort as $column => $direction) {
+            $entries->orderBy($column, $direction);
+        }
+
+        return response()->json([
+            'data' => $todoList->toArray(),
+            'children' => $entries->get()->toArray(),
+            'owner' => $todoList->owner->toArray()
+        ], 200, [], 128);
     }
 
     /**
@@ -96,6 +119,7 @@ class TodoListController extends Controller
      */
     public function destroy(TodoList $todoList)
     {
-        //
+        $todoList->delete();
+        return redirect()->route('home');
     }
 }

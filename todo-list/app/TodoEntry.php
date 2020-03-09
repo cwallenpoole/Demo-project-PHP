@@ -18,7 +18,7 @@ class TodoEntry extends \App\Model
      * @var array
      */
     protected $fillable = [
-        'description', 'due_date', 'status', 'list_id'
+        'description', 'due_date', 'status', 'list_id', 'priority'
     ];
 
     /**

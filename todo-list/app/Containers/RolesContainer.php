@@ -3,7 +3,8 @@
 namespace App\Containers;
 
 use App\User;
-use Illuminate\Support\Facades\Log;
+use App\TodoEntry;
+use App\TodoList;
 
 /**
  * This class exists for extracting the different role information from the rest of the site.
@@ -31,8 +32,8 @@ class RolesContainer {
     public function userMatchesRole(User $user, $role) {
 
         if(func_num_args() > 2) {
-            $roles = func_get_args();
-            array_shift($roles);
+            $role = func_get_args();
+            array_shift($role);
         }
 
         if(!is_object($user)){
@@ -46,6 +47,34 @@ class RolesContainer {
         }
 
         return in_array($user->role, $role);
+    }
+
+    /**
+     * Restricting user ability to edit.
+     *
+     * @param \App\User $user
+     * @param TodoEntry|TodoList $todoItem
+     */
+    public function userCanEdit(\App\User $user, $todoItem) {
+        if(!$todoItem) {
+            return false;
+        }
+
+        if(is_a($todoItem, TodoEntry::class)) {
+            $todoItem = $todoItem->parent();
+        }
+
+        // Admins can do anything
+        if($this->userMatchesRole($user, static::ADMIN)) {
+            return true;
+        // Readers can only update their private lists
+        } elseif ($this->userMatchesRole($user, static::READER) && !$todoItem->is_private) {
+            return false;
+        }
+
+        return !$todoItem->exists ||
+            $todoItem->user_id === $user->id;
+
     }
 
     /**

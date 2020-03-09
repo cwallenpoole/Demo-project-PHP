@@ -27,7 +27,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'api_token'
     ];
 
     /**
@@ -107,6 +107,7 @@ class User extends Authenticatable
             // The api_token is a combination of random content and the time.
             // This is a cheap way of letting us force the token to expire.
             $this->attributes['api_token'] = base64_encode($hash . ':' . $offset . ':' . $id . ':' . time());
+
             $this->saveIfNotDirty();
         }
         return $this;
